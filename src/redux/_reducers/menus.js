@@ -4,21 +4,21 @@ const initialState = {
     error: null
 }
 
-export default function categories(state = initialState, action) {
+export default function menus(state = initialState, action) {
     switch (action.type) {
-        case 'GET_CATEGORIES':
+        case 'GET_MENUS_CATEGORIES':
             return {
                 ...state,
                 isLoading: true
             }
 
-        case 'GET_CATEGORIES_FULFILLED':
+        case 'GET_MENUS_CATEGORIES_FULFILLED':
             return {
                 ...state,
                 isLoading: false,
                 data: action.payload.data
             }
-        case 'GET_CATEGORIES_REJECTED':
+        case 'GET_MENUS_CATEGORIES_REJECTED':
             return {
                 ...state,
                 isLoading: false,
