@@ -6,9 +6,10 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import home from '../screen/home/home'
 import login from '../screen/auth/login'
 
+
 import { white, yellow, night } from '../styles/styles'
 
-const PublicNav = createBottomTabNavigator({
+const PrivateNav = createBottomTabNavigator({
     home: {
         screen: home,
         navigationOptions: {
@@ -21,9 +22,9 @@ const PublicNav = createBottomTabNavigator({
     login: {
         screen: login,
         navigationOptions: {
-            tabBarLabel: 'Login',
+            tabBarLabel: 'Promo',
             tabBarIcon: ({ tintColor }) => (
-                <Icon name="user" color={tintColor} size={25} />
+                <Icon name="inbox" color={tintColor} size={25} />
             )
         }
     }
@@ -43,4 +44,4 @@ const PublicNav = createBottomTabNavigator({
         }
     })
 
-export default createAppContainer(PublicNav)
+export default createAppContainer(PrivateNav)

@@ -1,31 +1,144 @@
+'use strict'
+
 const initialState = {
     isLoading: true,
-    data: [],
+    food: [],
+    drink: [],
+    dessert: [],
     error: null
 }
 
-export default function menus(state = initialState, action) {
+const menus = (state = initialState, action) => {
     switch (action.type) {
-        case 'GET_MENUS_CATEGORIES':
+        case 'GET_FOOD':
             return {
                 ...state,
                 isLoading: true
             }
 
-        case 'GET_MENUS_CATEGORIES_FULFILLED':
+        case 'GET_FOOD_FULFILLED':
+            const food = action.payload.data.map(item => ({
+                ...item, selected: false
+            }))
             return {
                 ...state,
                 isLoading: false,
-                data: action.payload.data
+                food
             }
-        case 'GET_MENUS_CATEGORIES_REJECTED':
+
+        case 'GET_FOOD_REJECTED':
             return {
                 ...state,
                 isLoading: false,
                 error: action.payload.message
             }
 
+        // DRINK
+        case 'GET_DRINK':
+            return {
+                ...state,
+                isLoading: true
+            }
+
+        case 'GET_DRINK_FULFILLED':
+            const drink = action.payload.data.map(item => ({
+                ...item, selected: false
+            }))
+            return {
+                ...state,
+                isLoading: false,
+                drink
+            }
+
+        case 'GET_DRINK_REJECTED':
+            return {
+                ...state,
+                isLoading: false,
+                error: action.payload.message
+            }
+
+        case 'GET_DESSERT':
+            return {
+                ...state,
+                isLoading: true
+            }
+
+        case 'GET_DESSERT_FULFILLED':
+            const dessert = action.payload.data.map(item => ({
+                ...item, selected: false
+            }))
+            return {
+                ...state,
+                isLoading: false,
+                dessert
+            }
+
+        case 'GET_DESSERT_REJECTED':
+            return {
+                ...state,
+                isLoading: false,
+                error: action.payload.message
+            }
+
+
+
+
+
+        case 'UPDATE_MAKANAN':
+            let dataCart = action.food.findIndex(x => x.id == action.payload.id)
+
+            let datafix = { ...action.food[dataCart], selected: true }
+
+            action.food = action.food.splice(dataCart, 1, datafix)
+            let datamakananfixbanget = [...action.foodfix, datafix]
+            // console.log(datamakananfix)
+            // console.log(datamakananfixbanget)
+            datamakananfixbanget.pop()
+            return {
+                ...state,
+                food: datamakananfixbanget
+            }
+
+
+        case 'UPDATE_MINUMAN':
+            let dataDrink = action.drink.findIndex(x => x.id == action.payload.id)
+            console.log(action.drink[dataDrink])
+
+            let datafixDrink = { ...action.drink[dataDrink], selected: true }
+
+            action.drink = action.drink.splice(dataDrink, 1, datafixDrink)
+            let dataMinuman = [...action.drinkfix, datafixDrink]
+            // console.log(datamakananfix)
+            // console.log(datamakananfixbanget)
+            dataMinuman.pop()
+            return {
+                ...state,
+                drink: dataMinuman
+            }
+
+
+        case 'UPDATE_CEMILAN':
+            let dataDessert = action.dessert.findIndex(x => x.id == action.payload.id)
+            console.log(action.dessert[dataDessert])
+
+            let datafixDessert = { ...action.dessert[dataDessert], selected: true }
+
+            action.dessert = action.dessert.splice(dataDessert, 1, datafixDessert)
+            let dataCemilan = [...action.dessertfix, datafixDessert]
+            // console.log(datamakananfix)
+            // console.log(dataCemilan)
+            dataCemilan.pop()
+            return {
+                ...state,
+                dessert: dataCemilan
+            }
+
+
+
+
         default:
             return state
     }
 }
+
+export default menus

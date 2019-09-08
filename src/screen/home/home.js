@@ -9,7 +9,8 @@ import AsyncStorage from '@react-native-community/async-storage'
 
 import env from '../../env/env'
 import { white, night, yellow } from '../../styles/styles'
-import { getCategories } from '../../redux/_action/categories'
+import { getCartBack } from '../../redux/_action/orders'
+import StackMain from '../../navigation/stackMain'
 
 
 class home extends Component {
@@ -18,7 +19,8 @@ class home extends Component {
         super()
         this.state = {
             table: '',
-            count: null
+            timer: 0,
+            isi: false
         }
     }
 
@@ -28,20 +30,21 @@ class home extends Component {
         this.setState({
             table
         })
+
     }
 
-    componentDidMount() {
-        this.props.dispatch(getCategories())
-    }
+
 
     loading = () => {
-        return (<View style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center'
-        }}>
-            <ActivityIndicator size={0} color={yellow} />
-        </View>)
+        return (
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                alignContent: 'center'
+            }}>
+                <ActivityIndicator size={40} color={yellow} />
+            </View>)
     }
 
 
@@ -60,8 +63,6 @@ class home extends Component {
     }
 
     render() {
-        const extractKey = ({ id }) => id.toString()
-        console.log(this.props.categories)
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -71,10 +72,10 @@ class home extends Component {
                 <View style={styles.header}>
                     <View>
                         <Text style={styles.textHeader}>Nativex</Text>
-                        <Text style={{
-                            fontSize: 20,
-                            color: night,
-                        }}>Anything you need</Text>
+                    </View>
+                    <View style={styles.table}>
+                        <Text style={{ color: night, fontWeight: 'bold', marginRight: 10 }}>No: {this.state.table}</Text>
+                        <Text style={{ color: night }}>30:23:00</Text>
                     </View>
                 </View>
                 <View style={styles.footer}>
@@ -82,36 +83,31 @@ class home extends Component {
                         <Icon name='search1' size={26} />
                         <TextInput style={styles.textContent} placeholder='Search anything...' />
                     </View>
-                    <View style={styles.qr_code}>
-                        <TouchableOpacity>
-                            <View style={{ justifyContent: 'space-evenly' }}>
-                                <Icon name='shoppingcart' size={26} />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.table}>
-                    <Text style={{ color: night, fontWeight: 'bold' }}>No: {this.state.table}</Text>
-                    <Text style={{ color: night }}>30.23.00</Text>
-                </View>
-                <View>
+
                     {
-                        this.props.categories.isLoading == true &&
-                        this.loading()
+                        this.props.orders.cart == 0 ?
+
+                            <View style={styles.qr_code}>
+                                {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('orders')}> */}
+                                <View style={{ justifyContent: 'space-around' }}>
+                                    <Icon name='shoppingcart' size={26} />
+                                </View>
+                                {/* </TouchableOpacity> */}
+                            </View>
+
+                            :
+
+                            <View style={styles.qr_code}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('orders')}>
+                                    <View style={{ justifyContent: 'space-around' }}>
+                                        <Icon name='shoppingcart' size={26} color='#00a663' />
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
                     }
-                    {this.props.categories.isLoading == false &&
-                        <View style={{ paddingBottom: 80 }}>
-                            <FlatList
-                                showsVerticalScrollIndicator={false}
-                                numColumns={2}
-                                data={this.props.categories.data}
-                                renderItem={this.renderItem}
-                                keyExtractor={extractKey}
-                                style={{ marginBottom: 100 }}
-                            />
-                        </View>
-                    }
+
                 </View>
+                <StackMain />
             </View >
         )
     }
@@ -119,7 +115,9 @@ class home extends Component {
 
 const mapStateToProps = state => {
     return {
-        categories: state.categories
+        categories: state.categories,
+        transaction: state.transaction,
+        orders: state.orders
     }
 }
 
@@ -128,9 +126,6 @@ export default connect(mapStateToProps)(home)
 
 const styles = StyleSheet.create({
     table: {
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingTop: 20,
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
@@ -146,7 +141,7 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        marginBottom: 30,
+        marginBottom: 20,
         justifyContent: 'space-between',
         alignContent: 'center',
         alignItems: 'center'

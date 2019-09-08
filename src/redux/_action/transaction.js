@@ -15,3 +15,4 @@ export const addTransaction = (data) => {
         payload: axios.post(env.host + 'transaction', data)
     }
 }
+

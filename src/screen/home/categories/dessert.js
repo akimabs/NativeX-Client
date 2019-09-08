@@ -6,28 +6,27 @@ import { connect } from 'react-redux'
 import { Card } from 'react-native-elements'
 import AsyncStorage from '@react-native-community/async-storage'
 
-import { white, night, yellow } from '../../styles/styles'
-import { getMenusByCategory, updateMenu } from '../../redux/_action/menus'
-import { addToCart, UpdateCart } from '../../redux/_action/orders'
+import { white, night, yellow } from '../../../styles/styles'
+import { getDessert, updateDessert } from '../../../redux/_action/menus'
+import { addToCart, UpdateCart, Increment, Decrement } from '../../../redux/_action/orders'
 
-class menus extends Component {
+class Food extends Component {
 
     constructor() {
         super()
         this.state = {
             dataOrder: [],
+            menu: {
+                qty: 0
+            }
         }
     }
 
     addToCart = async (item, transactionId) => {
         let data = this.props.orders.cart.findIndex(x => x.id == item.id)
-        console.warn(data)
         if (data >= 0) {
         } else {
-            let a = this.props.menus.data.map(item => ({
-                ...item, selected: true
-            }))
-            await this.props.dispatch(updateMenu(item, this.props.menus.data, this.props.menus.data))
+            await this.props.dispatch(updateDessert(item, this.props.menus.dessert, this.props.menus.dessert))
             await this.props.dispatch(addToCart(item, this.props.transaction.data.id))
         }
     }
@@ -40,12 +39,8 @@ class menus extends Component {
         })
     }
 
-    inc = () => {
-        this.setState({
-            menu: {
-                qty: this.state.qty + 1
-            }
-        })
+    inc = async (item) => {
+        await this.props.dispatch(Increment(this.props.orders.cart[0], this.props.orders.cart, this.props.orders.cart))
     }
 
     dec = () => {
@@ -62,9 +57,7 @@ class menus extends Component {
     }
 
     componentWillMount() {
-        const { navigation } = this.props;
-        const data = navigation.getParam('rows');
-        this.props.dispatch(getMenusByCategory(data.id))
+        this.props.dispatch(getDessert())
     }
 
 
@@ -85,11 +78,11 @@ class menus extends Component {
         var number_string = price.toString(),
             sisa = number_string.length % 3,
             rupiah = number_string.substr(0, sisa),
-            ribuan = number_string.substr(sisa).match(/\d{3}/g);
+            ribuan = number_string.substr(sisa).match(/\d{3}/g)
 
         if (ribuan) {
-            separator = sisa ? '.' : '';
-            rupiah += separator + ribuan.join('.');
+            separator = sisa ? '.' : ''
+            rupiah += separator + ribuan.join('.')
         }
 
         return (
@@ -120,26 +113,13 @@ class menus extends Component {
                         {
                             item.selected == true &&
                             // <TouchableOpacity onPress={() => this.addToCart(item, this.props.transaction.data.id)}>
-                            <View style={{ height: 30, width: 90, backgroundColor: '#00a663', elevation: 2, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 5, paddingRight: 5, borderRadius: 5 }}>
-                                <View>
-                                    <Text style={{ fontWeight: 'bold', color: white }}>Done</Text>
-                                </View>
+                            <View style={{ height: 30, width: 90, backgroundColor: '#00a663', elevation: 2, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 10, paddingRight: 10, borderRadius: 5 }}>
+
+                                <Text style={{ fontWeight: 'bold', color: white }}>Done</Text>
+                                <Icon name='checkcircle' color={white} size={15} />
                             </View>
                             // </TouchableOpacity>
 
-                            // <View style={{ height: 30, width: 90, backgroundColor: 'white', elevation: 2, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 5, paddingRight: 5, borderRadius: 5 }}>
-                            //     <TouchableOpacity onPress={this.dec}>
-                            //         <View>
-                            //             <Icon name='minus' color='#00a663' size={20} />
-                            //         </View>
-                            //     </TouchableOpacity>
-                            //     <Text style={{ fontWeight: 'bold', color: night }}>{this.state.menu.qty}</Text>
-                            //     <TouchableOpacity onPress={this.inc}>
-                            //         <View>
-                            //             <Icon name='plus' color='#00a663' size={20} />
-                            //         </View>
-                            //     </TouchableOpacity>
-                            // </View>
                         }
                     </View>
                 </Card>
@@ -148,40 +128,12 @@ class menus extends Component {
     }
 
     render() {
-        let tId = `${this.props.transaction.data.id}`
         return (
             <View style={styles.container}>
                 <StatusBar
                     backgroundColor={white}
                     barStyle='dark-content'
                 />
-                <View style={styles.header}>
-                    <View>
-                        <Text style={styles.textHeader}>Nativex</Text>
-                        <Text style={{
-                            fontSize: 20,
-                            color: night,
-                        }}>Anything you need</Text>
-                    </View>
-                </View>
-                <View style={styles.footer}>
-                    <View style={styles.search}>
-                        <Icon name='search1' size={26} />
-                        <TextInput style={styles.textContent} placeholder='Search anything...' />
-                    </View>
-                    <View style={styles.qr_code}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('orders')}>
-                            <View style={{ justifyContent: 'space-evenly' }}>
-                                <Icon name='shoppingcart' size={26} />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.table}>
-                    <Text style={{ color: night, fontWeight: 'bold' }}>#{tId}</Text>
-                    <Text style={{ color: night, fontWeight: 'bold' }}>No: {this.state.table}</Text>
-                    <Text style={{ color: night }}>30:23:00</Text>
-                </View>
                 <View>
                     {
                         this.props.menus.isLoading == true &&
@@ -189,16 +141,15 @@ class menus extends Component {
                     }
                     {
                         this.props.menus.isLoading == false &&
-                        <View style={{ paddingBottom: 80 }}>
+                        <View>
                             <FlatList
                                 snapToInterval={270}
                                 decelerationRate="normal"
                                 showsVerticalScrollIndicator={false}
-                                data={this.props.menus.data}
+                                data={this.props.menus.dessert}
                                 keyExtractor={(item) => item.id.toString()}
                                 renderItem={this.renderItem}
-                                style={{ marginBottom: 100 }}
-                                extraData={this.props.menus.data}
+                                extraData={this.props.menus.dessert}
                             />
                         </View>
                     }
@@ -217,7 +168,7 @@ const mapStateToProps = state => {
 }
 
 
-export default connect(mapStateToProps)(menus)
+export default connect(mapStateToProps)(Food)
 
 const styles = StyleSheet.create({
     table: {
@@ -227,9 +178,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: white,
-        paddingLeft: 20,
-        paddingRight: 20
+        backgroundColor: white
     },
     FlatList: {
         flex: 1,
