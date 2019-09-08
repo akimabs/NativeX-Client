@@ -9,6 +9,7 @@ export const addToCart = (data, id) => {
         price: data.price,
         qty: 1,
         name: data.name,
+        categoryId: data.categoryId,
         status: 0
     }
     return {
@@ -56,6 +57,7 @@ export const DELETE = (data, datapatch, datafix) => {
         datafix
     }
 }
+
 
 export const RESET = () => {
     return {

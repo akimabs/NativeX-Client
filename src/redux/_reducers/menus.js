@@ -82,8 +82,6 @@ const menus = (state = initialState, action) => {
 
 
 
-
-
         case 'UPDATE_MAKANAN':
             let dataCart = action.food.findIndex(x => x.id == action.payload.id)
 
@@ -131,6 +129,51 @@ const menus = (state = initialState, action) => {
             return {
                 ...state,
                 dessert: dataCemilan
+            }
+
+
+        case 'FALSE_MENU':
+            let dataOrdersFix = action.menu.findIndex(y => y.id == action.payload.menuId)
+            // console.warn(action.menu[dataOrdersFix])
+
+            let statusNewOrders = { ...action.menu[dataOrdersFix], selected: false }
+            action.menu = action.menu.splice(dataOrdersFix, 1, statusNewOrders)
+            let dataStatusFix = [...action.menufix, statusNewOrders]
+            dataStatusFix.pop()
+            // console.log(action.menufix[dataStatusFix])
+            return {
+                ...state,
+                food: dataStatusFix
+            }
+
+
+        case 'FALSE_DRINK':
+            let dataDrinkFix = action.menu.findIndex(y => y.id == action.payload.menuId)
+            // console.warn(action.menu[dataDrinkFix])
+
+            let statusNewDrink = { ...action.menu[dataDrinkFix], selected: false }
+            action.menu = action.menu.splice(dataDrinkFix, 1, statusNewDrink)
+            let dataDrinkk = [...action.menufix, statusNewDrink]
+            dataDrinkk.pop()
+            // console.log(action.menufix[dataDrinkk])
+            return {
+                ...state,
+                drink: dataDrinkk
+            }
+
+
+        case 'FALSE_DESSERT':
+            let dataDessertFix = action.menu.findIndex(y => y.id == action.payload.menuId)
+            // console.warn(action.menu[dataDessertFix])
+
+            let statusNewDessert = { ...action.menu[dataDessertFix], selected: false }
+            action.menu = action.menu.splice(dataDessertFix, 1, statusNewDessert)
+            let dataStatuss = [...action.menufix, statusNewDessert]
+            dataStatuss.pop()
+            // console.log(action.menufix[dataStatuss])
+            return {
+                ...state,
+                dessert: dataStatuss
             }
 
 

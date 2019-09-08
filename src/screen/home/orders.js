@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-community/async-storage'
 
 import { Increment, Decrement, pushCart, UPDATE, DELETE } from '../../redux/_action/orders'
+import { FALSE, FALSE_DRINK, FALSE_DESSERT } from '../../redux/_action/menus'
 import { white, night, yellow } from '../../styles/styles'
 
 
@@ -49,11 +50,20 @@ class orders extends Component {
         if (item.qty == 0 || item.qty <= 1) {
             await this.props.dispatch(DELETE(item, this.props.orders.cart, this.props.orders.cart))
             await this._count()
+            if (item.categoryId == 4) {
+            await this.props.dispatch(FALSE(item, this.props.menus.food, this.props.menus.food))
+            } else if (item.categoryId == 3) {
+                await this.props.dispatch(FALSE_DRINK(item, this.props.menus.drink, this.props.menus.drink))
+            } else if (item.categoryId == 2) {
+                await this.props.dispatch(FALSE_DESSERT(item, this.props.menus.dessert, this.props.menus.dessert))
+            }
         } else {
             await this.props.dispatch(Decrement(item, this.props.orders.cart, this.props.orders.cart))
+            // await this.props.dispatch(FALSE(item, this.props.menus.data, this.props.menus.data))
             await this._count()
         }
     }
+
 
     loading = () => {
         return (<View style={{
@@ -213,7 +223,8 @@ class orders extends Component {
 const mapStateToProps = state => {
     return {
         orders: state.orders,
-        transaction: state.transaction
+        transaction: state.transaction,
+        menus: state.menus
     }
 }
 
