@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 
 
 import { white, night, yellow } from '../../styles/styles'
-import { StackActions } from 'react-navigation';
 
 import { RESET } from '../../redux/_action/orders'
 
@@ -14,8 +13,14 @@ class success extends Component {
     constructor() {
         super()
         this.state = {
-            table: '',
+            table: ''
         }
+    }
+
+    dateTime = (time) => {
+        let Menit = Math.floor(time / 60);
+        let Detik = time % 60;
+        return Menit + ":" + Detik;
     }
 
     logout = async () => {
@@ -43,6 +48,7 @@ class success extends Component {
                     <Text style={{ fontSize: 20, color: white, fontWeight: 'bold', textAlign: 'center' }}>TO PROCCED THE PAYMENT</Text>
 
                     <Text style={{ marginTop: 20, fontSize: 40, color: white, fontWeight: 'bold', textAlign: 'center' }}>#{this.state.table}</Text>
+                    <Text style={{ marginTop: 20, fontSize: 20, color: white, fontWeight: 'bold', textAlign: 'center' }}>Time Spend: {this.dateTime(this.props.timer.count)}</Text>
                     <Image style={{ height: 230, width: 230 }} source={require('../../assets/image/goal.png')} />
 
                     <TouchableOpacity style={{ marginTop: 30, height: 50, width: '90%', backgroundColor: white, borderRadius: 10, paddingLeft: 20, paddingRight: 20, justifyContent: 'center', alignContent: 'center', alignItems: 'flex-end' }} onPress={this.logout}>
@@ -62,7 +68,8 @@ const mapStateToProps = state => {
     return {
         menus: state.menus,
         transaction: state.transaction,
-        orders: state.orders
+        orders: state.orders,
+        timer: state.timer
     }
 }
 

@@ -10,7 +10,7 @@ import { white, night, yellow } from '../../../styles/styles'
 import { getDrink, updateDrink } from '../../../redux/_action/menus'
 import { addToCart, UpdateCart } from '../../../redux/_action/orders'
 
-class Food extends Component {
+class Drink extends Component {
 
     constructor() {
         super()
@@ -171,7 +171,7 @@ const mapStateToProps = state => {
 }
 
 
-export default connect(mapStateToProps)(Food)
+export default connect(mapStateToProps)(Drink)
 
 const styles = StyleSheet.create({
     table: {

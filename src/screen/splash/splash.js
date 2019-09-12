@@ -14,7 +14,8 @@ class splash extends Component {
         super()
         this.state = {
             table: null,
-            isPress: false
+            isPress: false,
+            isLoading: false
 
         }
     }
@@ -24,14 +25,14 @@ class splash extends Component {
         if (this.state.table == null) {
             return false
         } else {
+            await this.setState({
+                isPress: true
+            })
             await AsyncStorage.setItem('tableNumber', this.state.table)
             await this.props.dispatch(addTransaction({
                 tableNumber: this.state.table,
                 isPaid: 0
             }))
-            await this.setState({
-                isPress: true
-            })
             await AsyncStorage.setItem('transactionId', `${this.props.transaction.data.id}`)
             await this.props.navigation.navigate('home')
             await this.setState({

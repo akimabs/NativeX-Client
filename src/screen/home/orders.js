@@ -2,11 +2,13 @@ import React, { Component } from 'react'
 import { StyleSheet, View, Text, StatusBar, TextInput, Alert, TouchableOpacity, ActivityIndicator, FlatList, Image, ScrollView } from 'react-native'
 // import { Icon } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/AntDesign'
+import Iconn from 'react-native-vector-icons/MaterialIcons'
 import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-community/async-storage'
 
-import { Increment, Decrement, pushCart, UPDATE, DELETE } from '../../redux/_action/orders'
+import { Increment, Decrement, pushCart, UPDATE, DELETE, RESET } from '../../redux/_action/orders'
 import { FALSE, FALSE_DRINK, FALSE_DESSERT } from '../../redux/_action/menus'
+import { timerOn } from '../../redux/_action/timers'
 import { white, night, yellow } from '../../styles/styles'
 
 
@@ -17,6 +19,7 @@ class orders extends Component {
         this.state = {
             table: '',
             total: 0,
+            time: 0,
             onConfirm: false,
             pressConf: true,
         }
@@ -39,6 +42,7 @@ class orders extends Component {
             table
         })
         await this._count()
+        // await this.props.dispatch(timerOn(this.props.timer.count))
     }
 
     inc = async (item) => {
@@ -50,11 +54,11 @@ class orders extends Component {
         if (item.qty == 0 || item.qty <= 1) {
             await this.props.dispatch(DELETE(item, this.props.orders.cart, this.props.orders.cart))
             await this._count()
-            if (item.categoryId == 4) {
-            await this.props.dispatch(FALSE(item, this.props.menus.food, this.props.menus.food))
-            } else if (item.categoryId == 3) {
-                await this.props.dispatch(FALSE_DRINK(item, this.props.menus.drink, this.props.menus.drink))
+            if (item.categoryId == 1) {
+                await this.props.dispatch(FALSE(item, this.props.menus.food, this.props.menus.food))
             } else if (item.categoryId == 2) {
+                await this.props.dispatch(FALSE_DRINK(item, this.props.menus.drink, this.props.menus.drink))
+            } else if (item.categoryId == 3) {
                 await this.props.dispatch(FALSE_DESSERT(item, this.props.menus.dessert, this.props.menus.dessert))
             }
         } else {
@@ -75,16 +79,20 @@ class orders extends Component {
         </View>)
     }
 
+
     changeStatus = async () => {
+
         await this.props.orders.cart.map(item => {
             this.props.dispatch(UPDATE(item, this.props.orders.cart, this.props.orders.cart))
         })
-        this.props.dispatch(pushCart(this.props.orders.cart))
-        this.setState({
+        await this.props.dispatch(pushCart(this.props.orders.cart))
+        await this.setState({
             onConfirm: true,
             pressConf: false
         })
     }
+
+
 
 
     onConf = (item) => {
@@ -98,7 +106,7 @@ class orders extends Component {
                 }
 
             ]
-        );
+        )
     }
 
     toRupiah = (number) => {
@@ -108,6 +116,15 @@ class orders extends Component {
         return 'Rp. ' + rupiah.split('', rupiah.length - 1).reverse().join('');
     }
 
+    dateTime = (time) => {
+        let Menit = Math.floor(time / 60);
+        let Detik = time % 60;
+        return Menit + ":" + Detik;
+    }
+
+    resetBill = async () => {
+        await this.props.navigation.navigate('bill')
+    }
 
     renderItem = ({ item }) => {
 
@@ -161,8 +178,14 @@ class orders extends Component {
                         <Text style={styles.textHeader}>Nativex</Text>
                     </View>
                     <View style={styles.table}>
-                        <Text style={{ color: night, fontWeight: 'bold', marginRight: 10 }}>No: {this.state.table}</Text>
-                        <Text style={{ color: night }}>30:23:00</Text>
+                        <View style={{ flexDirection: 'row', marginRight: 15 }}>
+                            <Iconn name='inbox' size={18} style={{ fontWeight: 'bold', marginRight: 5 }} />
+                            <Text style={{ color: night, fontWeight: 'bold' }}>No: {this.state.table}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Iconn name='schedule' size={18} style={{ fontWeight: 'bold', marginRight: 5 }} />
+                            <Text style={{ color: night, fontWeight: 'bold' }}>{this.dateTime(this.props.timer.count)}</Text>
+                        </View>
                     </View>
                 </View>
                 <Text style={{ fontSize: 24, color: night, fontWeight: 'bold', textAlign: 'right', paddingRight: 30 }}>{this.toRupiah(this.state.total)}</Text>
@@ -183,7 +206,7 @@ class orders extends Component {
                 />
                 <View style={{ height: 50, backgroundColor: white, width: '100%', flexDirection: 'row', marginBottom: 10 }}>
                     {
-                        this.props.orders.cart.length >= 1 &&
+                        this.state.pressConf == true &&
                         <TouchableOpacity style={{ backgroundColor: '#00a663', height: 43, width: '65%', elevation: 3, justifyContent: 'space-evenly', borderTopRightRadius: 10, borderBottomRightRadius: 10, alignItems: 'center', alignContent: 'center', flexDirection: 'row', marginRight: 10 }} onPress={this.onConf}>
                             <View>
                                 <Text style={{ color: white, fontWeight: 'bold', fontSize: 17 }}>Confirm</Text>
@@ -191,7 +214,7 @@ class orders extends Component {
                         </TouchableOpacity>
                     }
                     {
-                        this.props.orders.cart.length == 0 &&
+                        this.state.pressConf == false &&
 
                         <View style={{ borderWidth: 2, borderColor: '#00a663', backgroundColor: white, height: 43, width: '65%', elevation: 3, justifyContent: 'space-evenly', borderTopRightRadius: 10, borderBottomRightRadius: 10, alignItems: 'center', alignContent: 'center', flexDirection: 'row', marginRight: 10 }}>
                             <Text style={{ color: '#00a663', fontWeight: 'bold', fontSize: 17 }}>Confirmed</Text>
@@ -208,7 +231,7 @@ class orders extends Component {
                     }
                     {
                         this.state.onConfirm == true &&
-                        <TouchableOpacity style={{ height: 43, width: '40%', borderRadius: 10, backgroundColor: yellow, elevation: 3, justifyContent: 'center', alignItems: 'center' }} onPress={() => this.props.navigation.navigate('bill')}>
+                        <TouchableOpacity style={{ height: 43, width: '40%', borderRadius: 10, backgroundColor: yellow, elevation: 3, justifyContent: 'center', alignItems: 'center' }} onPress={() => this.resetBill()}>
                             <View>
                                 <Text style={{ color: white, fontWeight: 'bold', fontSize: 17 }}>Bill</Text>
                             </View>
@@ -224,7 +247,8 @@ const mapStateToProps = state => {
     return {
         orders: state.orders,
         transaction: state.transaction,
-        menus: state.menus
+        menus: state.menus,
+        timer: state.timer,
     }
 }
 

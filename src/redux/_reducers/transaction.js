@@ -1,6 +1,7 @@
 const initialState = {
     isLoading: true,
     data: '',
+    dataBefore: '',
     message: ''
 }
 
@@ -27,25 +28,24 @@ export default function categories(state = initialState, action) {
                 isLoading: false
             }
 
-
-        case 'GET_TRANSACTION_PENDING':
+        case 'GET_TRANSACTIONS':
             return {
                 ...state,
-                isLoading: true
-            }
-
-        case 'GET_TRANSACTION_FULFILLED':
-            return {
-                ...state,
-                data: action.payload.data,
-                message: action.payload.data.message,
+                dataBefore: action.payload,
                 isLoading: false
             }
 
-        case 'GET_TRANSACTION_REJECTED':
+        case 'PATCH_TRANSACTION':
             return {
                 ...state,
-                message: action.payload.data.message,
+                dataBefore: action.payload.dataBefore,
+                isLoading: false
+            }
+
+        case 'PUSH_TRANSACTION':
+            return {
+                ...state,
+                data: action.payload.data,
                 isLoading: false
             }
 

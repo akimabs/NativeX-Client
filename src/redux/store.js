@@ -1,18 +1,16 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
 import { logger, promise } from '../redux/middleware'
-import categories from './_reducers/categories'
 import transaction from './_reducers/transaction'
 import menus from './_reducers/menus'
 import orders from './_reducers/orders'
-import carts from './_reducers/carts'
+import timer from './_reducers/timers'
 
 const reducers = combineReducers({
-    categories,
     transaction,
     menus,
     orders,
-    carts
+    timer
 })
 
 const store = createStore(

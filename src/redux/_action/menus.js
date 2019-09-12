@@ -4,17 +4,17 @@ import env from '../../env/env'
 
 export const getFood = () => ({
     type: "GET_FOOD",
-    payload: axios.get(env.host + "menus/" + 4)
+    payload: axios.get(env.host + "menus/" + 1)
 })
 
 export const getDrink = () => ({
     type: "GET_DRINK",
-    payload: axios.get(env.host + "menus/" + 3)
+    payload: axios.get(env.host + "menus/" + 2)
 })
 
 export const getDessert = () => ({
     type: "GET_DESSERT",
-    payload: axios.get(env.host + "menus/" + 2)
+    payload: axios.get(env.host + "menus/" + 3)
 })
 
 export const updateMenu = (item, food, foodfix) => ({

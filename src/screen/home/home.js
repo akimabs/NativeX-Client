@@ -2,14 +2,14 @@ import React, { Component } from 'react'
 import { StyleSheet, View, Text, StatusBar, TextInput, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native'
 // import { Icon } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/AntDesign'
+import Iconn from 'react-native-vector-icons/MaterialIcons'
 import { connect } from 'react-redux'
 import { Card } from 'react-native-elements'
-import axios from 'axios'
 import AsyncStorage from '@react-native-community/async-storage'
 
-import env from '../../env/env'
+
 import { white, night, yellow } from '../../styles/styles'
-import { getCartBack } from '../../redux/_action/orders'
+import { timerOn, setTimer } from '../../redux/_action/timers'
 import StackMain from '../../navigation/stackMain'
 
 
@@ -19,18 +19,31 @@ class home extends Component {
         super()
         this.state = {
             table: '',
-            timer: 0,
+            time: 0,
             isi: false
         }
     }
 
+    timer = async () => {
+        await this.setState({
+            time: this.state.time + 1
+        })
+        await this.props.dispatch(timerOn(this.state.time))
+    }
 
-    async componentWillMount() {
+    dateTime = (time) => {
+        let Menit = Math.floor(time / 60);
+        let Detik = time % 60;
+        return Menit + ":" + Detik;
+    }
+
+    async componentDidMount() {
         const table = await AsyncStorage.getItem('tableNumber')
-        this.setState({
+        await this.setState({
             table
         })
-
+        this.set = setInterval(this.timer, 1000)
+        await this.props.dispatch(setTimer(this.set))
     }
 
 
@@ -74,8 +87,14 @@ class home extends Component {
                         <Text style={styles.textHeader}>Nativex</Text>
                     </View>
                     <View style={styles.table}>
-                        <Text style={{ color: night, fontWeight: 'bold', marginRight: 10 }}>No: {this.state.table}</Text>
-                        <Text style={{ color: night }}>30:23:00</Text>
+                        <View style={{ flexDirection: 'row', marginRight: 15 }}>
+                            <Iconn name='inbox' size={18} style={{ fontWeight: 'bold', marginRight: 5 }} />
+                            <Text style={{ color: night, fontWeight: 'bold' }}>No: {this.state.table}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Iconn name='schedule' size={18} style={{ fontWeight: 'bold', marginRight: 5 }} />
+                            <Text style={{ color: night, fontWeight: 'bold' }}>{this.dateTime(this.state.time)}</Text>
+                        </View>
                     </View>
                 </View>
                 <View style={styles.footer}>
@@ -97,10 +116,10 @@ class home extends Component {
 
                             :
 
-                            <View style={styles.qr_code}>
+                            <View style={{ ...styles.qr_code, backgroundColor: '#00a663' }}>
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('orders')}>
                                     <View style={{ justifyContent: 'space-around' }}>
-                                        <Icon name='shoppingcart' size={26} color='#00a663' />
+                                        <Icon name='shoppingcart' size={26} color={white} />
                                     </View>
                                 </TouchableOpacity>
                             </View>
@@ -115,9 +134,9 @@ class home extends Component {
 
 const mapStateToProps = state => {
     return {
-        categories: state.categories,
         transaction: state.transaction,
-        orders: state.orders
+        orders: state.orders,
+        timer: state.timer
     }
 }
 

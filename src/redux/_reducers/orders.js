@@ -2,6 +2,7 @@ const initialState = {
     isLoading: true,
     cart: [],
     cartFix: [],
+    data: [],
     isSelected: false
 }
 
@@ -27,7 +28,7 @@ export default function categories(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                cart: [...state.cart, action.payload]
+                cart: action.payload.data
             }
 
         case 'GET_CART_BACK':
